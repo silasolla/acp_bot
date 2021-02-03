@@ -9,14 +9,13 @@ require 'cgi'
 require 'timeout'
 require 'dotenv'
 
-Dotenv.load
 
-#client = Twitter::REST::Client.new do |config|
-#  config.consumer_key        = ENV['TWITTER_CONSUMER_KEY']        #Consumer Key (API Key)
-#  config.consumer_secret     = ENV['TWITTER_CONSUMER_SECRET']     #Consumer Secret (API Secret)
-#  config.access_token        = ENV['TWITTER_ACCESS_TOKEN']        #Access Token
-#  config.access_token_secret = ENV['TWITTER_ACCESS_TOKEN_SECRET'] #Access Token Secret
-#end
+$self_screen_name = ''
+$path_to_minisat = ''
+$path_to_yices = ''
+$path_to_acp_heap_image = ''
+
+Dotenv.load
 
 consumer_key        = ENV['TWITTER_CONSUMER_KEY']
 consumer_secret     = ENV['TWITTER_CONSUMER_SECRET']
@@ -60,13 +59,13 @@ loop do
     $old_id = new_id
 
     File.open("tweet.trs", "w") do |f| 
-      f.puts ((CGI.unescapeHTML(new_get[0]['full_text'])).gsub!(/@term_rewriting/, ''))
+      f.puts ((CGI.unescapeHTML(new_get[0]['full_text'])).gsub!(/@#{$self_screen_name}/, ''))
     end
     url = 'https://twitter.com/' + new_get[0]['user']['screen_name'] + '/status/' + new_get[0]['id_str']
     
     begin
       Timeout.timeout(20) do
-        $judge_unc = `acp-v0.62/bin/acp tweet.trs -p unc --minisat-path=minisat-2.2.0/minisat_core --yices-path=yices-2.6.1/bin/yices --tmp-dir=tmp | head -1 | tail -1`
+        $judge_unc = `#{$path_to_acp_heap_image} tweet.trs -p unc --minisat-path=#{$path_to_minisat} --yices-path=#{$path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
       end
     rescue Timeout::Error
       $judge_unc = "TIME OUT\n"
@@ -77,7 +76,7 @@ loop do
     else    
       begin
         Timeout.timeout(20) do
-          $judge_cr = `acp-v0.62/bin/acp tweet.trs -p cr --minisat-path=minisat-2.2.0/minisat_core --yices-path=yices-2.6.1/bin/yices --tmp-dir=tmp | head -1 | tail -1`
+          $judge_cr = `#{$path_to_acp_heap_image} tweet.trs -p cr --minisat-path=#{$path_to_minisat} --yices-path=#{path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
         end
       rescue Timeout::Error
         $judge_cr = "TIME OUT\n"
