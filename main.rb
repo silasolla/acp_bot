@@ -9,18 +9,17 @@ require 'cgi'
 require 'timeout'
 require 'dotenv'
 
-
-$self_screen_name = ''
-$path_to_minisat = ''
-$path_to_yices = ''
-$path_to_acp_heap_image = ''
-
 Dotenv.load
 
 consumer_key        = ENV['TWITTER_CONSUMER_KEY']
 consumer_secret     = ENV['TWITTER_CONSUMER_SECRET']
 access_token        = ENV['TWITTER_ACCESS_TOKEN']
 access_token_secret = ENV['TWITTER_ACCESS_TOKEN_SECRET']
+
+$self_screen_name = ENV['SELF_SCREEN_NAME']
+$path_to_minisat  = ENV['PATH_TO_MINISAT']
+$path_to_yices    = ENV['PATH_TO_YICES']
+$path_to_acp_heap = ENV['PATH_TO_ACP_HEAP']
 
 consumer = OAuth::Consumer::new(
   consumer_key,
@@ -65,7 +64,7 @@ loop do
     
     begin
       Timeout.timeout(20) do
-        $judge_unc = `#{$path_to_acp_heap_image} tweet.trs -p unc --minisat-path=#{$path_to_minisat} --yices-path=#{$path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
+        $judge_unc = `sml @SMLload=#{$path_to_acp_heap} tweet.trs -p unc --minisat-path=#{$path_to_minisat} --yices-path=#{$path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
       end
     rescue Timeout::Error
       $judge_unc = "TIME OUT\n"
@@ -76,7 +75,7 @@ loop do
     else    
       begin
         Timeout.timeout(20) do
-          $judge_cr = `#{$path_to_acp_heap_image} tweet.trs -p cr --minisat-path=#{$path_to_minisat} --yices-path=#{path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
+          $judge_cr = `sml @SMLload=#{$path_to_acp_heap} tweet.trs -p cr --minisat-path=#{$path_to_minisat} --yices-path=#{path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
         end
       rescue Timeout::Error
         $judge_cr = "TIME OUT\n"
