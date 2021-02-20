@@ -75,7 +75,7 @@ loop do
     else    
       begin
         Timeout.timeout(20) do
-          $judge_cr = `sml @SMLload=#{$path_to_acp_heap} tweet.trs -p cr --minisat-path=#{$path_to_minisat} --yices-path=#{path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
+          $judge_cr = `sml @SMLload=#{$path_to_acp_heap} tweet.trs -p cr --minisat-path=#{$path_to_minisat} --yices-path=#{$path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
         end
       rescue Timeout::Error
         $judge_cr = "TIME OUT\n"
