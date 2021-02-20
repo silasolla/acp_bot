@@ -62,7 +62,7 @@ loop do
     end
     url = 'https://twitter.com/' + new_get[0]['user']['screen_name'] + '/status/' + new_get[0]['id_str']
     p '---(URL)'
-    p $url
+    p url
     begin
       Timeout.timeout(20) do
         $judge_unc = `sml @SMLload=#{$path_to_acp_heap} tweet.trs -p unc --minisat-path=#{$path_to_minisat} --yices-path=#{$path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
