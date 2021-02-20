@@ -61,7 +61,8 @@ loop do
       f.puts ((CGI.unescapeHTML(new_get[0]['full_text'])).gsub!(/@#{$self_screen_name}/, ''))
     end
     url = 'https://twitter.com/' + new_get[0]['user']['screen_name'] + '/status/' + new_get[0]['id_str']
-    
+    p '---(URL)'
+    p $url
     begin
       Timeout.timeout(20) do
         $judge_unc = `sml @SMLload=#{$path_to_acp_heap} tweet.trs -p unc --minisat-path=#{$path_to_minisat} --yices-path=#{$path_to_yices} --tmp-dir=tmp | head -1 | tail -1`
@@ -84,7 +85,10 @@ loop do
       if $judge_cr=='' then
         $judge_cr="??\n"
       end
-      
+      p '---(UNC?)'
+      p $judge_unc
+      p '---(CR?)'
+      p $judge_cr
       post_Tweet($judge_unc + "(Unique Normal forms w.r.t. Conversion)\n---\n" + $judge_cr + "(Church-Rosser)\n" + url)
     end
   end
